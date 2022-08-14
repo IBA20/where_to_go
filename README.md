@@ -11,13 +11,74 @@
 ## Возможности
 
 * Добавление локаций, описаний и коментариев, загрузка фото через админ-панель
-* Быстрое добавление списка новых локаций из файлов GeoJSON. 
+* Быстрое добавление списка новых локаций из файлов JSON. 
 
 
 ## Установка
 
-* Ознакомьтесь с документацией вашего хостинга в части деплоя Django-приложений
-* Для корректной работы требуется переменная окружения SECRET_KEY, содержащая секретный ключ Django
+1. Ниже приведена инструкция по деплою сайта на хостинг [pythonanywhere.com](https://pythonanywhere.com). Для других хостингов знакомьтесь с их документацией в части деплоя Django-приложений.
+2. Войдите в аккаунт pythonanywhere.com, при необходимости предварительно зарегистрируйтесь.
+3. Перейдите на страницу Consoles, в разделе Start new console нажмите Bash.
+4. Введите команду 
+```
+git clone https://github.com/IBA20/where_to_go
+```
+Содержимое этого репозитория будет скопировано в директорию home/myusername/where_to_go, где myusername - ваш логин.
+5. Создайте виртуальное окружение командой
+```
+mkvirtualenv --python=/usr/bin/python3.9 myvirtualenv
+```
+6. Перейдите в папку приложения и установите необходимые библиотеки 
+```
+cd where_to_go
+pip install -r requirements.txt
+```
+7. Перейдите на страницу Web и создайте новое приложение (Add new web app). На шаге Select a Python Web framework выберите Manual configuration затем Python 3.9.
+8. В разделе Virtualenv введите имя виртуального окружения, созданного на шаге 5 (myvirtualenv).
+9. В разделе Code откройте wsgi-файл по ссылке WSGI configuration file. Удалите все, кроме раздела DJANGO. Раскомментируйте команды, откорректируйте имя директории с приложением. В итоге должно получиться примерно следующее:
+```
+import os
+import sys
+
+# assuming your django settings file is at '/home/myusername/mysite/mysite/settings.py'
+# and your manage.py is is at '/home/myusername/where_to_go/manage.py'
+path = '/home/myusername/where_to_go'
+if path not in sys.path:
+    sys.path.append(path)
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'where_to_go.settings'
+
+# then:
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
+```
+Не забудьте сохранить файл кнопкой Save.
+10. На странице Files перейдите в директорию home/myusername/where-to_go и создайте файл .env со следующим содержимым. 
+```
+export SECRET_KEY=secretvalue
+export ALLOWED_HOSTS=myusername.pythonanywhere.com
+```
+Замените secretvalue на надежный секретный ключ для Django, a myusername - на ваш логин. Сохраните файл.
+11. Вернитесь в Bash-консоль и ввведите команды
+```
+python manage.py collectstatic
+python manage.py migrate
+mkdir media
+```
+12. Создайте учетную запись администратора
+```
+python manage.py createsuperuser --username admin
+```
+13. На странице Web в разделе Static files пропишите следующее:
+
+URL&emsp;&emsp;Directory
+
+/static/ &emsp;/home/myusername/where_to_go/static	 
+/media/&emsp;/home/myusername/where_to_go/media
+14. В разделе Security установите Force HTTPS: Enabled
+5Нажмите кнопку Reload: myusername.pythonanywhere.com
+15. Загрузите тестовые данные (см. раздел Использование ниже) и проверьте работоспособность сайта.
+16. Дополнительные сведения по деплою [здесь](https://help.pythonanywhere.com/pages/DeployExistingDjangoProject)
 * Для работы с внешними базами данных требуется корректная переменная окружения DATABASES_URL
 
 ## Использование
