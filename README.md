@@ -82,7 +82,7 @@ URL&emsp;&emsp;Directory
 14. В разделе Security установите Force HTTPS: Enabled. Нажмите кнопку Reload: myusername.pythonanywhere.com
 15. Загрузите тестовые данные (см. раздел Использование ниже) и проверьте работоспособность сайта.  
 16. Дополнительные сведения по деплою [здесь](https://help.pythonanywhere.com/pages/DeployExistingDjangoProject)
-* Для работы с внешними базами данных требуется корректная переменная окружения DATABASES_URL
+17. Опционально: для работы с внешними базами данных пропишите переменную окружения DATABASES_URL в файле .env.
 
 ## Использование
 
