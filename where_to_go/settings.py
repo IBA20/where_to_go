@@ -1,6 +1,10 @@
 import os
-import dj_database_url
 from pathlib import Path
+from environs import Env
+
+
+env = Env()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,12 +14,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = env.str('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = env.bool('DEBUG', False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['.localhost', '127.0.0.1', '[::1]'])
 
 
 # Application definition
@@ -68,7 +72,7 @@ WSGI_APPLICATION = 'where_to_go.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(default="sqlite:///" + str(BASE_DIR) + "/db.sqlite3")
+    'default': env.dj_db_url("DATABASE_URL", default=f"sqlite:///{str(BASE_DIR)}/db.sqlite3")
 }
 
 
@@ -106,11 +110,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = env.str('STATIC_URL', 'static/')
+STATIC_ROOT = env.str('STATIC_ROOT', os.path.join(BASE_DIR, 'static/'))
+# STATICFILES_DIRS = env.list('STATICFILES_DIRS', [os.path.join(BASE_DIR, "static/")])
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+MEDIA_URL = env.str('MEDIA_URL', '/media/')
+MEDIA_ROOT = env.str('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

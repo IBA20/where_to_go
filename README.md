@@ -26,15 +26,15 @@
 
 [Пример админки на демосайте](https://iba.pythonanywhere.com/admin). Логин admin, пароль 12325.
 
-2. Быстрое добавление одной или нескольких локаций из файлов GeoJSON:
+2. Быстрое добавление одной или нескольких локаций из файлов JSON:
 
 В консоли ввести команду
 ```
-python3 management.py url [urls]
+python3 management.py load_place url [urls]
 ```
-где url - ссылка на GeoJSON файл.
+где url - ссылка на JSON файл.
 
-*Пример корректного файла GeoJSON:*
+*Пример корректного файла JSON:*
 ```
 {
     "title": "Экскурсионный проект «Крыши24.рф»",
@@ -52,7 +52,7 @@ python3 management.py url [urls]
 }
 ```
 
-[Тестовые данные в формате GeoJSON](https://github.com/devmanorg/where-to-go-places)
+[Тестовые данные в формате JSON](https://github.com/devmanorg/where-to-go-places)
 
 ## Цели проекта
 

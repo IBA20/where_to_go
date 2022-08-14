@@ -5,11 +5,6 @@ from .models import Place, Image
 from where_to_go import settings
 
 
-class BlankPageView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, "blank.html")
-
-
 class StartPageView(View):
     def get(self, request, *args, **kwargs):
         places = Place.objects.all()
@@ -29,10 +24,10 @@ class StartPageView(View):
             })
 
         data = {
-            'geojsonscript': str({
+            'geojsonscript': {
                   "type": "FeatureCollection",
                   "features": features
-                }).replace("'", '"')
+                }
             }
         return render(request, "index.html", context=data)
 
@@ -45,7 +40,7 @@ class PlaceView(View):
             imgs = []
         else:
             place = queryset[0].place
-            imgs = [settings.MEDIA_URL + str(el.src) for el in queryset]
+            imgs = [settings.MEDIA_URL + str(el.path) for el in queryset]
         data = {
             "title": place.title,
             "imgs": imgs,
