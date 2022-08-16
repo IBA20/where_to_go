@@ -22,6 +22,7 @@ SECRET_KEY=secretvalue
 DEBUG=True
 ```
 Опционально: при использовании внешней базы данных добавьте переменную окружения DATABASE_URL [(подробнее)](https://pypi.org/project/dj-database-url/#url-schema). При необходимости использования нестандартных названий и расположений папок для статики и медиафайлов настройте переменные STATIC_URL, STATIC_ROOT, MEDIA_URL, MEDIA_ROOT.  
+
 3. Примените миграции
 ```
 python manage.py migrate
@@ -117,7 +118,7 @@ URL&emsp;&emsp;Directory
 
 В консоли ввести команду
 ```
-python3 management.py load_place url [urls]
+python3 management.py load_place url [url] ...
 ```
 где url - ссылка на JSON файл.
 
