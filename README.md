@@ -13,8 +13,32 @@
 * Добавление локаций, описаний и коментариев, загрузка фото через админ-панель
 * Быстрое добавление списка новых локаций из файлов JSON. 
 
+## Локальная установка
 
-## Установка
+1. Клонируйте данный репозиторий на локальную машину, создайте виртуальное окружение и установите зависимости из файла requirements.txt.  
+2. В корневой директории приложения создайте файл .env со следующим содержимым.  
+```
+SECRET_KEY=secretvalue
+DEBUG=True
+```
+Опционально: при использовании внешней базы данных добавьте переменную окружения DATABASE_URL [(подробнее)](https://pypi.org/project/dj-database-url/#url-schema). При необходимости использования нестандартных названий и расположений папок для статики и медиафайлов настройте переменные STATIC_URL, STATIC_ROOT, MEDIA_URL, MEDIA_ROOT.  
+3. Примените миграции
+```
+python manage.py migrate
+```
+4. Создайте учетную запись администратора
+```
+python manage.py createsuperuser --username admin
+```
+5. Запустите сайт
+```
+python manage.py runserver
+```
+6. Загрузите тестовые данные (см. раздел Использование ниже).  
+7. Проверьте работоспособность сайта по адресу http://127.0.0.1:8000/  
+
+
+## Установка на хостинге
 
 1. Ниже приведена инструкция по деплою сайта на хостинг [pythonanywhere.com](https://pythonanywhere.com). Для других хостингов ознакомьтесь с их документацией в части деплоя Django-приложений.
 2. Войдите в аккаунт pythonanywhere.com, при необходимости предварительно зарегистрируйтесь.
@@ -57,15 +81,14 @@ application = get_wsgi_application()
 
 10. На странице Files перейдите в директорию home/myusername/where-to_go и создайте файл .env со следующим содержимым. 
 ```
-export SECRET_KEY=secretvalue
-export ALLOWED_HOSTS=myusername.pythonanywhere.com
+SECRET_KEY=secretvalue
+ALLOWED_HOSTS=myusername.pythonanywhere.com
 ```
 Замените secretvalue на надежный секретный ключ для Django, a myusername - на ваш логин. Сохраните файл.
 11. Вернитесь в Bash-консоль и ввведите команды
 ```
 python manage.py collectstatic
 python manage.py migrate
-mkdir media
 ```
 12. Создайте учетную запись администратора
 ```
@@ -88,7 +111,7 @@ URL&emsp;&emsp;Directory
 
 1. Вход в админку по адресу имя_сайта/admin. 
 
-[Пример админки на демосайте](https://iba.pythonanywhere.com/admin). Логин admin, пароль 12325.
+[Пример админки на демосайте](https://iba.pythonanywhere.com/admin).
 
 2. Быстрое добавление одной или нескольких локаций из файлов JSON:
 

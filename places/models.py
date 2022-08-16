@@ -19,9 +19,16 @@ class Place(models.Model):
 
 
 class Image(models.Model):
-    place = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='images')
+    place = models.ForeignKey(
+        Place,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
     order = models.IntegerField(default=0, verbose_name='Позиция')
-    path = models.ImageField(upload_to='images/%Y/%m/%d/', verbose_name='Картинка')
+    picture = models.ImageField(
+        upload_to='images/%Y/%m/%d/',
+        verbose_name='Картинка'
+    )
 
     class Meta:
         ordering = ['order']
@@ -29,4 +36,4 @@ class Image(models.Model):
         verbose_name_plural = "Картинки"
 
     def __str__(self):
-        return f'{str(self.order)} {str(self.place)}'
+        return f'{self.order} {self.place}'

@@ -13,19 +13,21 @@ class ImageInline(SortableTabularInline):
     verbose_name_plural = "Фотографии"
 
     def get_preview(self):
-        height = min(self.src.height, 200)
-        width = self.src.width / self.src.height * height
-        return format_html("{}", mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-            url=self.src.url,
-            height=height,
-            width=width,
-
+        height = min(self.picture.height, 200)
+        width = self.picture.width / self.picture.height * height
+        return format_html(
+            "{}",
+            mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url=self.picture.url,
+                    height=height,
+                    width=width,
+                )
+            ),
         )
-        ),
-                           )
 
     readonly_fields = [get_preview]
-    fields = ('src', get_preview, 'order')
+    fields = ('picture', get_preview, 'order')
 
 
 @admin.register(Place)
@@ -53,15 +55,15 @@ class ImageAdmin(admin.ModelAdmin):
     def order(self):
         return self.order
 
-    def src(self):
-        return self.src
+    def picture(self):
+        return self.picture
 
     def place(self):
         return self.place
 
     order.short_description = 'Позиция'
-    src.short_description = 'Картинка'
+    picture.short_description = 'Картинка'
     place.short_description = 'Локация'
-    list_display = (order, place, src)
+    list_display = (order, place, picture)
     ordering = ['place', 'order']
     list_filter = ('place',)

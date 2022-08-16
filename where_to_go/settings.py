@@ -2,13 +2,11 @@ import os
 from pathlib import Path
 from environs import Env
 
-
 env = Env()
 env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -20,7 +18,6 @@ SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['.localhost', '127.0.0.1', '[::1]'])
-
 
 # Application definition
 
@@ -51,8 +48,7 @@ ROOT_URLCONF = 'where_to_go.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,14 +63,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'where_to_go.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.dj_db_url("DATABASE_URL", default=f"sqlite:///{str(BASE_DIR)}/db.sqlite3")
+    'default': env.dj_db_url(
+        "DATABASE_URL",
+        default=f"sqlite:///{str(BASE_DIR)}/db.sqlite3"
+    )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -94,7 +91,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -106,14 +102,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = env.str('STATIC_URL', 'static/')
 STATIC_ROOT = env.str('STATIC_ROOT', os.path.join(BASE_DIR, 'static/'))
-# STATICFILES_DIRS = env.list('STATICFILES_DIRS', [os.path.join(BASE_DIR, "static/")])
-
 
 MEDIA_URL = env.str('MEDIA_URL', '/media/')
 MEDIA_ROOT = env.str('MEDIA_ROOT', os.path.join(BASE_DIR, 'media/'))
