@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate, validates, ValidationError
+from marshmallow import Schema, fields, validate, pre_load, post_load
 
 
 class PlaceSchema(Schema):
@@ -6,11 +6,34 @@ class PlaceSchema(Schema):
     imgs = fields.List(fields.String())
     description_short = fields.String()
     description_long = fields.String()
-    coordinates = fields.Dict(keys=fields.String(), values=fields.Float())
+    lng = fields.Float(
+        required=True,
+        validate=validate.Range(min_inclusive=-180, max_inclusive=180)
+    )
+    lat = fields.Float(
+        required=True,
+        validate=validate.Range(min_inclusive=-90, max_inclusive=90)
+    )
 
-    @validates("coordinates")
-    def validate_coordinates(self, dct):
-        if 'lat' not in dct or 'lng' not in dct:
-            raise ValidationError("Coordinates are missed or incorrect")
-        if not -90 <= dct['lat'] <= 90 or not -180 <= dct['lng'] <= 180:
-            raise ValidationError("Wrong latitude and/or longitude value")
+    class Meta:
+        fields = [
+            'title',
+            'imgs',
+            'description_short',
+            'description_long',
+            'lng',
+            'lat'
+        ]
+
+    @pre_load
+    def process_coords(self, in_data, **kwargs):
+        coordinates = in_data.pop('coordinates')
+        in_data['lat'] = coordinates['lat']
+        in_data['lng'] = coordinates['lng']
+        return in_data
+
+    @post_load
+    def round_coords(self, in_data, **kwargs):
+        in_data['lat'] = round(in_data['lat'], 5)
+        in_data['lng'] = round(in_data['lng'], 5)
+        return in_data

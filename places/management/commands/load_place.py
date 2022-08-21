@@ -1,4 +1,3 @@
-from decimal import Decimal
 from os.path import split
 from marshmallow import ValidationError
 from requests import get
@@ -14,59 +13,65 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('json_links', nargs='+', type=str)
 
+    def get_place_data(self, json_link):
+        response = get(json_link)
+        if not response.ok:
+            self.stdout.write(
+                self.style.WARNING(f'File not found: {json_link}')
+            )
+            return
+        try:
+            place_data = response.json()
+            place_data = PlaceSchema().load(place_data)
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f'Successfully retrieved data from {json_link}'
+                )
+            )
+            return place_data
+        except ValidationError as err:
+            self.stdout.write(
+                self.style.WARNING(f'Wrong data in: {json_link}')
+            )
+            for k, v in err.messages.items():
+                self.stdout.write(self.style.WARNING(f'{k}: {v}'))
+            return
+
+    def download_images(self, n, img, place):
+        filename = split(img)[1]
+        imgfile = get(img)
+        if not imgfile.ok:
+            self.stdout.write(self.style.WARNING(f'Image not found: {img}'))
+            return
+        image = Image.objects.create(place=place, order=n + 1)
+        image.picture.save(filename, ContentFile(imgfile.content), save=True)
+        self.stdout.write(
+            self.style.SUCCESS(f'Successfully retrieved image from {img}')
+        )
+
     def handle(self, *args, **options):
         for json_link in options['json_links']:
-            response = get(json_link)
-            if not response.ok:
-                self.stdout.write(
-                    self.style.WARNING(f'File not found: {json_link}')
-                )
-                continue
-            try:
-                place_data = response.json()
-                PlaceSchema().load(place_data)
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f'Successfully retrieved data from {json_link}'
-                    )
-                )
-                place, created = Place.objects.get_or_create(
-                    lng=Decimal(place_data['coordinates']['lng']),
-                    lat=Decimal(place_data['coordinates']['lat']),
-                    defaults={
-                        'title': place_data['title'],
-                        'description_short': place_data['description_short'],
-                        'description_long': place_data['description_long'],
-                    }
-                )
-            except ValidationError as err:
-                self.stdout.write(
-                    self.style.WARNING(f'Wrong data in: {json_link}')
-                )
-                for k, v in err.messages.items():
-                    self.stdout.write(self.style.WARNING(f'{k}: {v}'))
-                continue
+            place_data = self.get_place_data(json_link)
+            place, created = Place.objects.get_or_create(
+                lng=place_data['lng'],
+                lat=place_data['lat'],
+                defaults={
+                    'title': place_data['title'],
+                    'description_short': place_data.get(
+                        'description_short',
+                        ''
+                    ),
+                    'description_long': place_data.get(
+                        'description_long',
+                        ''
+                    ),
+                }
+            )
             if not created:
                 self.stdout.write(
                     self.style.WARNING(f'Object already exists:{json_link}')
                 )
                 continue
-            for n, img in enumerate(place_data['imgs']):
-                filename = split(img)[1]
-                imgfile = get(img)
-                if not imgfile.ok:
-                    self.stdout.write(
-                        self.style.WARNING(f'Image not found: {json_link}')
-                    )
-                    continue
-                image = Image.objects.create(place=place, order=n + 1)
-                image.picture.save(
-                    filename,
-                    ContentFile(imgfile.content),
-                    save=True,
-                )
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f'Successfully retrieved image from {json_link}'
-                    )
-                )
+
+            for n, img in enumerate(place_data.get('imgs', [])):
+                self.download_images(n, img, place)
