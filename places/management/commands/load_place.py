@@ -39,12 +39,16 @@ class Command(BaseCommand):
 
     def download_images(self, n, img, place):
         filename = split(img)[1]
-        imgfile = get(img)
-        if not imgfile.ok:
+        img_response = get(img)
+        if not img_response.ok:
             self.stdout.write(self.style.WARNING(f'Image not found: {img}'))
             return
-        image = Image.objects.create(place=place, order=n + 1)
-        image.picture.save(filename, ContentFile(imgfile.content), save=True)
+        image = Image.objects.create(place=place, order=n)
+        image.picture.save(
+            filename,
+            ContentFile(img_response.content),
+            save=True
+        )
         self.stdout.write(
             self.style.SUCCESS(f'Successfully retrieved image from {img}')
         )
@@ -73,5 +77,5 @@ class Command(BaseCommand):
                 )
                 continue
 
-            for n, img in enumerate(place_data.get('imgs', [])):
+            for n, img in enumerate(place_data.get('imgs', []), 1):
                 self.download_images(n, img, place)
